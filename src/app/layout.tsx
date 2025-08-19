@@ -30,7 +30,7 @@ export default function RootLayout({
       >
         <SidebarProvider>
           <AppSidebar />
-          <main className="flex-1 w-full h-screen overflow-y-scroll">
+          <main className="w-full h-screen overflow-y-scroll relative">
             <SidebarTrigger />
             {children}
           </main>

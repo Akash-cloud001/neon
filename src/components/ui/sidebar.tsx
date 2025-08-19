@@ -258,10 +258,10 @@ function SidebarTrigger({
   onClick,
   ...props
 }: React.ComponentProps<typeof Button>) {
-  const { toggleSidebar } = useSidebar()
+  const { toggleSidebar, isMobile } = useSidebar()
 
   return (
-    <div className="flex items-center justify-between py-1 px-4">
+    <div className="flex items-center justify-between py-4 px-4 border-b sticky top-0 z-10 bg-background dark:bg-background shadow-sm">
       <Button
         data-sidebar="trigger"
         data-slot="sidebar-trigger"
@@ -277,9 +277,11 @@ function SidebarTrigger({
         <PanelLeftIcon />
         <span className="sr-only">Toggle Sidebar</span>
       </Button>
-      <Button variant="ghost" size="icon">
-        <SunIcon className="" />
-      </Button>
+      <div>
+        <Button variant="ghost" size="icon">
+          <SunIcon className="" />
+        </Button>
+      </div>
     </div>
     
   )
