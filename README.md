@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Neon
 
-## Getting Started
+Neon is a modern, extensible UI prototyping project built with Next.js, React, TypeScript, Tailwind CSS, and Radix UI. It features a modular sidebar system, custom theming, and a scalable component architecture inspired by shadcn/ui.
 
-First, run the development server:
+## Tech Stack
+- **Framework:** Next.js 15.4.7
+- **UI Library:** React 19, Radix UI, shadcn/ui
+- **Styling:** Tailwind CSS 4, custom CSS variables, PostCSS
+- **Language:** TypeScript
+- **Icons:** lucide-react
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Features
+- **Modular Sidebar System:**
+  - Highly configurable, supports expanded/collapsed states, keyboard shortcuts, and mobile sheet mode.
+  - Group and menu structures for organizing navigation or actions.
+  - Theming support (light/dark) via CSS variables and Tailwind.
+- **Responsive Design:**
+  - Mobile detection via custom hooks (`useIsMobile`).
+  - Sidebar adapts to mobile/desktop layouts.
+- **Component Organization:**
+  - Uses aliases for clean imports (see `components.json`).
+  - UI primitives in `src/components/ui/`, app-specific components in `src/components/`.
+- **Utilities:**
+  - `cn` utility for class merging (Tailwind + clsx).
+
+## Project Structure
+```
+/ (root)
+├── src/
+│   ├── app/
+│   │   ├── layout.tsx      # Root layout with sidebar
+│   │   ├── page.tsx        # Home page
+│   │   └── globals.css     # Tailwind & custom CSS variables
+│   ├── components/
+│   │   ├── app-sidebar.tsx # Sidebar composition
+│   │   └── ui/             # Sidebar primitives & UI components
+│   ├── hooks/
+│   │   └── use-mobile.ts   # Mobile detection hook
+│   └── lib/
+│       └── utils.ts        # Utility functions (e.g., cn)
+├── components.json         # shadcn/ui config & aliases
+├── package.json            # Dependencies & scripts
+└── ...
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Usage
+1. **Install dependencies:**
+   ```bash
+   npm install
+   # or yarn, pnpm, bun
+   ```
+2. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
+   Open [http://localhost:3000](http://localhost:3000) to view the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. **Edit pages/components:**
+   - Main entry: `src/app/page.tsx`
+   - Sidebar: `src/components/app-sidebar.tsx` and `src/components/ui/sidebar.tsx`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Theming & Customization
+- Edit `src/app/globals.css` for color variables and Tailwind layers.
+- Sidebar and UI primitives are designed for easy extension and theming.
 
-## Learn More
+## Conventions
+- Follows shadcn/ui and Radix UI best practices for accessibility and composability.
+- Uses TypeScript for type safety and maintainability.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+MIT (or specify your license here)
