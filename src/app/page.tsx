@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { BrainCircuit, Key, PlusIcon } from "lucide-react";
-import Image from "next/image";
 
 export default function Home() {
   return (
