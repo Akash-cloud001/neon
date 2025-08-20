@@ -4,6 +4,7 @@ import "./globals.css";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import { ChatLoader } from "@/components/chat-loader";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,13 +31,20 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen w-screen overflow-hidden`}
       >
-        <SidebarProvider>
-          <AppSidebar />
-          <main className="w-full h-screen overflow-y-scroll relative">
-            <SidebarTrigger />
-            <ChatLoader>{children}</ChatLoader>
-          </main>
-        </SidebarProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <SidebarProvider>
+            <AppSidebar />
+            <main className="w-full h-screen overflow-y-scroll relative">
+              <SidebarTrigger />
+              <ChatLoader>{children}</ChatLoader>
+            </main>
+          </SidebarProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

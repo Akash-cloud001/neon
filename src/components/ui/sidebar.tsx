@@ -3,7 +3,8 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, VariantProps } from "class-variance-authority"
-import { PanelLeftIcon, SunIcon, UserRound } from "lucide-react"
+import { Moon, Sun, PanelLeftIcon, UserRound } from "lucide-react"
+import { useTheme } from "next-themes"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
@@ -24,6 +25,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -259,6 +266,8 @@ function SidebarTrigger({
   ...props
 }: React.ComponentProps<typeof Button>) {
   const { toggleSidebar, isMobile } = useSidebar()
+  const { setTheme } = useTheme()
+
 
   return (
     <div className="flex items-center justify-between py-4 px-4 border-b sticky top-0 z-10 bg-background dark:bg-background shadow-sm">
@@ -278,10 +287,27 @@ function SidebarTrigger({
         <span className="sr-only">Toggle Sidebar</span>
       </Button>
       <div className="flex flex-row gap-2">
-        <Button variant="ghost" size="icon">
-          <SunIcon className="" />
+      <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="icon">
+          <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+          <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          <span className="sr-only">Toggle theme</span>
         </Button>
-        <Button className="w-8 h-8 rounded-full" variant="outline" size="icon">
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={() => setTheme("light")}>
+          Light
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("dark")}>
+          Dark
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("system")}>
+          System
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+        <Button className="w-9 h-9 " variant="outline" size="icon">
           {/* <AvatarImage src="https://github.com/shadcn.png" className="rounded-full h-8 w-8"/> */}
           <UserRound className="w-6 h-6" />
         </Button>
