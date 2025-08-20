@@ -196,7 +196,7 @@
 
   /* Container */
   .chat-container {
-    @apply min-h-[calc(100vh-193px)] bg-background;
+    @apply min-h-[calc(100dvh-193px)] bg-background pb-[150px];
   }
 
   .chat-messages {
