@@ -22,7 +22,7 @@ interface ChatStore {
   loading: boolean;
   actions: {
     loadChats: () => Promise<void>;
-    createChat: () => Promise<void>;
+    createChat: () => Promise<Chat>;
     renameChat: (id: string, title: string) => Promise<void>;
     deleteChat: (id: string) => Promise<void>;
     setActiveChatId: (id: string | null) => void;
@@ -53,6 +53,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         chats: [...state.chats, newChat],
         activeChatId: newChat.id,
       }));
+      return newChat;
     },
     async deleteChat(id) {
         await chatDB.deleteChat(id);
