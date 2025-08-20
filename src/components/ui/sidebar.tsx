@@ -3,7 +3,7 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, VariantProps } from "class-variance-authority"
-import { PanelLeftIcon, SunIcon } from "lucide-react"
+import { PanelLeftIcon, SunIcon, UserRound } from "lucide-react"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
@@ -277,9 +277,13 @@ function SidebarTrigger({
         <PanelLeftIcon />
         <span className="sr-only">Toggle Sidebar</span>
       </Button>
-      <div>
+      <div className="flex flex-row gap-2">
         <Button variant="ghost" size="icon">
           <SunIcon className="" />
+        </Button>
+        <Button className="w-8 h-8 rounded-full" variant="outline" size="icon">
+          {/* <AvatarImage src="https://github.com/shadcn.png" className="rounded-full h-8 w-8"/> */}
+          <UserRound className="w-6 h-6" />
         </Button>
       </div>
     </div>
