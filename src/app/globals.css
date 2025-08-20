@@ -166,6 +166,44 @@
     @apply bg-background text-foreground dark:bg-background dark:text-foreground;
   }
 }
+
+/* Custom component styles */
+@layer components {
+
+
+  /* User message (right side) */
+  .message-user {
+    @apply bg-card px-3 py-2 sm:px-4 rounded-xl max-w-[85vw] sm:max-w-2xl w-max flex items-center gap-2 shadow-sm self-end flex-row-reverse;
+  }
+
+  /* Other user message (left side) */
+  .message-other {
+    @apply bg-card px-3 py-2 sm:px-4 rounded-xl max-w-[85vw] sm:max-w-2xl w-max flex items-center gap-2 shadow-sm text-left self-start;
+  }
+
+  .message-avatar-primary {
+    @apply rounded-full w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center font-medium text-xs sm:text-sm flex-shrink-0 bg-primary text-primary-foreground;
+  }
+
+  .message-avatar-secondary {
+    @apply rounded-full w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center font-medium text-xs sm:text-sm flex-shrink-0 bg-secondary text-secondary-foreground;
+  }
+
+  /* Message text */
+  .message-text {
+    @apply text-xs sm:text-sm leading-relaxed;
+  }
+
+  /* Container */
+  .chat-container {
+    @apply min-h-[calc(100vh-193px)] bg-background;
+  }
+
+  .chat-messages {
+    @apply flex flex-col gap-3 sm:gap-4 h-full w-full p-3 sm:p-4;
+  }
+}
+
 /* For Webkit-based browsers (Chrome, Safari and Opera) */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
@@ -176,3 +214,4 @@
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
+
