@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
+import { ChatLoader } from "@/components/chat-loader";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -32,7 +34,7 @@ export default function RootLayout({
           <AppSidebar />
           <main className="w-full h-screen overflow-y-scroll relative">
             <SidebarTrigger />
-            {children}
+            <ChatLoader>{children}</ChatLoader>
           </main>
         </SidebarProvider>
       </body>
