@@ -20,13 +20,17 @@ interface ChatStore {
   chats: Chat[];
   activeChatId: string | null;
   loading: boolean;
+  activeChat: Chat | null;
   actions: {
     loadChats: () => Promise<void>;
     createChat: () => Promise<Chat>;
     renameChat: (id: string, title: string) => Promise<void>;
     deleteChat: (id: string) => Promise<void>;
-    setActiveChatId: (id: string | null) => void;
+    setActiveChatId: (id: string) => void;
     addMessage: (text: string, sender: 'user' | 'ai') => Promise<void>;
+    loadMessages: (chatId: string) => Promise<void>;
+    updateMessage: (chatId: string, message: Message) => Promise<void>;
+    deleteMessage: (chatId: string, messageId: string) => Promise<void>;
   };
 }
 
@@ -34,6 +38,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   chats: [],
   activeChatId: null,
   loading: true,
+  activeChat: null,
   actions: {
     async loadChats() {
       set({ loading: true });
@@ -52,6 +57,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       set((state) => ({
         chats: [...state.chats, newChat],
         activeChatId: newChat.id,
+        activeChat: newChat
       }));
       return newChat;
     },
@@ -63,7 +69,8 @@ export const useChatStore = create<ChatStore>((set, get) => ({
             if (state.activeChatId === id) {
                 newActiveChatId = newChats.length > 0 ? newChats[0].id : null;
             }
-            return { chats: newChats, activeChatId: newActiveChatId };
+            const newActiveChat = newActiveChatId ? newChats.find(chat => chat.id === newActiveChatId) : null;
+            return { chats: newChats, activeChatId: newActiveChatId, activeChat: newActiveChat };
         });
     },
     async renameChat(id, title) {
@@ -76,8 +83,10 @@ export const useChatStore = create<ChatStore>((set, get) => ({
             }));
         }
     },
-    setActiveChatId(id) {
-      set({ activeChatId: id });
+    async setActiveChatId(id:string) {
+      if (id === get().activeChatId) return;
+      const chat = await chatDB.getChat(id);
+      set({ activeChatId: id, activeChat: chat });
     },
     async addMessage(text, sender) {
       const { activeChatId } = get();
@@ -96,6 +105,37 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         chats: state.chats.map((chat) =>
           chat.id === activeChatId
             ? { ...chat, messages: [...chat.messages, newMessage] }
+            : chat
+        ),
+        activeChat: state.activeChat ? { ...state.activeChat, messages: [...state.activeChat.messages, newMessage] } : null
+      }));
+    },
+    async loadMessages(chatId) {
+      const messages = await chatDB.getAllMessages(chatId);
+      set((state) => ({
+        chats: state.chats.map((chat) =>
+          chat.id === chatId
+            ? { ...chat, messages }
+            : chat
+        ),
+      }));
+    },
+    async updateMessage(chatId, message) {
+      await chatDB.updateMessage(chatId, message);
+      set((state) => ({
+        chats: state.chats.map((chat) =>
+          chat.id === chatId
+            ? { ...chat, messages: chat.messages.map(m => m.id === message.id ? message : m) }
+            : chat
+        ),
+      }));
+    },
+    async deleteMessage(chatId, messageId) {
+      await chatDB.deleteMessage(chatId, messageId);
+      set((state) => ({
+        chats: state.chats.map((chat) =>
+          chat.id === chatId
+            ? { ...chat, messages: chat.messages.filter(m => m.id !== messageId) }
             : chat
         ),
       }));

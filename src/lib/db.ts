@@ -62,4 +62,28 @@ export const chatDB = {
       await this.updateChat(chat);
     }
   },
+  async getAllMessages(chatId: string) {
+    if (!dbPromise) throw new Error('Database not initialized');
+    const chat = await this.getChat(chatId);
+    return chat ? chat.messages : [];
+  },
+  async updateMessage(chatId: string, updatedMessage: ChatDB['chats']['value']['messages'][0]) {
+    if (!dbPromise) throw new Error('Database not initialized');
+    const chat = await this.getChat(chatId);
+    if (chat) {
+      const messageIndex = chat.messages.findIndex(m => m.id === updatedMessage.id);
+      if (messageIndex > -1) {
+        chat.messages[messageIndex] = updatedMessage;
+        await this.updateChat(chat);
+      }
+    }
+  },
+  async deleteMessage(chatId: string, messageId: string) {
+    if (!dbPromise) throw new Error('Database not initialized');
+    const chat = await this.getChat(chatId);
+    if (chat) {
+      chat.messages = chat.messages.filter(m => m.id !== messageId);
+      await this.updateChat(chat);
+    }
+  },
 };

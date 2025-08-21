@@ -1,8 +1,9 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
+import Image from "next/image"
 import { AnimatePresence, motion } from "framer-motion"
-import { Globe, Send } from "lucide-react"
+import { Globe, Paperclip, Plus, Send } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Textarea } from "@/components/ui/textarea"
@@ -73,22 +74,44 @@ const AnimatedPlaceholder = ({ showSearch }: { showSearch: boolean }) => (
   </AnimatePresence>
 )
 
-export default function AiInput({userMsg, setUserMsg, handleUserMsg}: {userMsg:string, setUserMsg:(msg:string)=>void, handleUserMsg:(msg:string, sender:'user' | 'ai')=>void}) {
+export default function AiInput() {
   const [value, setValue] = useState("")
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({
     minHeight: MIN_HEIGHT,
     maxHeight: MAX_HEIGHT,
   })
   const [showSearch, setShowSearch] = useState(false)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const handelClose = (e: React.MouseEvent<HTMLButtonElement> | React.FormEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "" // Reset file input
+    }
+    setImagePreview(null) // Use null instead of empty string
+  }
+
+  const handelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files ? e.target.files[0] : null
+    if (file) {
+      setImagePreview(URL.createObjectURL(file))
+    }
+  }
 
   const handleSubmit = () => {
-    setUserMsg(value);
     setValue("")
-    handleUserMsg(value, "user");
     adjustHeight(true)
   }
 
-
+  useEffect(() => {
+    return () => {
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview)
+      }
+    }
+  }, [imagePreview])
   return (
     <div className="w-full py-4 ">
       <div className="relative bg-background dark:bg-background  max-w-xl border rounded-[22px] border-black/5 p-1 w-full mx-auto">
@@ -125,6 +148,44 @@ export default function AiInput({userMsg, setUserMsg, handleUserMsg}: {userMsg:s
 
           <div className="h-12 bg-black/5 dark:bg-white/5 rounded-b-xl">
             <div className="absolute left-3 bottom-3 flex items-center gap-2">
+              <label
+                className={cn(
+                  "cursor-pointer relative rounded-full p-2 bg-black/5 dark:bg-white/5",
+                  imagePreview
+                    ? "bg-[#ff3f17]/15 border border-[#ff3f17] text-[#ff3f17]"
+                    : "bg-black/5 dark:bg-white/5 text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white"
+                )}
+              >
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handelChange}
+                  className="hidden"
+                />
+                <Paperclip
+                  className={cn(
+                    "w-4 h-4 text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white transition-colors",
+                    imagePreview && "text-[#ff3f17]"
+                  )}
+                />
+                {imagePreview && (
+                  <div className="absolute w-[100px] h-[100px] top-14 -left-4">
+                    <Image
+                      className="object-cover rounded-2xl"
+                      src={imagePreview || "/picture1.jpeg"}
+                      height={500}
+                      width={500}
+                      alt="additional image"
+                    />
+                    <button
+                      onClick={handelClose}
+                      className="bg-[#e8e8e8] text-[#464646] absolute -top-1 -left-1 shadow-3xl rounded-full rotate-45"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+              </label>
               <button
                 type="button"
                 onClick={() => {
