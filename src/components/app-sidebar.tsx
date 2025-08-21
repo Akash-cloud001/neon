@@ -37,7 +37,6 @@ export function AppSidebar() {
   }
 
   useEffect(() => {
-    console.log("chats:: ", chats)
     loadChats();
   }, []);
 
