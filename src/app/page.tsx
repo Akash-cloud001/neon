@@ -32,9 +32,9 @@ const router = useRouter();
         </h1>
       </div>
       <div className="flex flex-col sm:flex-row gap-4">
-        <Button className="" variant="outline">
+        {/* <Button className="" variant="outline">
           <Key/> Add LLM Keys
-        </Button>
+        </Button> */}
         <Button variant="outline" onClick={() => { createChatHelper() }} disabled={isCreatingChat}>
           {!isCreatingChat ?
             <>

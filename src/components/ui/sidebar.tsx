@@ -31,6 +31,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import Link from "next/link"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -307,10 +308,10 @@ function SidebarTrigger({
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-        <Button className="w-9 h-9 " variant="outline" size="icon">
-          {/* <AvatarImage src="https://github.com/shadcn.png" className="rounded-full h-8 w-8"/> */}
-          <UserRound className="w-6 h-6" />
-        </Button>
+          <Link href={'/profile'} className="w-9 h-9 flex items-center justify-center">
+            {/* <AvatarImage src="https://github.com/shadcn.png" className="rounded-full h-8 w-8"/> */}
+            <UserRound className="w-4 h-4" />
+          </Link>
       </div>
     </div>
     

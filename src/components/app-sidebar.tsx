@@ -85,13 +85,13 @@ export function AppSidebar() {
             </>
           ) : (
             <div className="w-full h-full flex items-center justify-center mt-[50%]">
-              <p className="text-muted-foreground dark:text-muted-foreground text-sm px-4 gap-4 mt-2 font-semibold flex flex-col items-center justify-center">
+              <div className="text-muted-foreground dark:text-muted-foreground text-sm px-4 gap-4 mt-2 font-semibold flex flex-col items-center justify-center">
                 <Image src="/no-chat.png" alt="no chats" width={100} height={100} />
                 <div className="text-center">
                   <p>No chats found</p>
                   <p>Create a new chat to get started</p>
                 </div>
-              </p>
+              </div>
             </div>
           )}
         </SidebarGroup>

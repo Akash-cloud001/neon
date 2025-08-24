@@ -42,12 +42,12 @@ const page = () => {
             ))
             :
             <div className="w-full h-full flex items-center justify-center mt-[30%]">
-              <p className="text-muted-foreground dark:text-muted-foreground text-sm px-4 gap-4 mt-2 font-semibold flex flex-col items-center justify-center">
+              <div className="text-muted-foreground dark:text-muted-foreground text-sm px-4 gap-4 mt-2 font-semibold flex flex-col items-center justify-center">
                 <Image src="/no-chat.png" alt="no chats" width={100} height={100} />
                 <div className="text-center">
                   <p>No messages found</p>
                 </div>
-              </p>
+              </div>
             </div>
           }
         </div>
@@ -61,3 +61,9 @@ const page = () => {
 }
 
 export default page
+
+
+/** 
+ * ? api keys, message->[role, content]
+ */
+
