@@ -11,6 +11,10 @@ const page = () => {
   const {setActiveChatId, addMessage} = useChatStore((state)=>state.actions);
   const {activeChat} = useChatStore((state)=>state);
   const [userMsg, setUserMsg] = useState('');
+  const [aiMsg, setAiMsg] = useState('');
+  const [loading, setLoading] = useState(false);
+
+
   useEffect(() => { 
     if(id){
       setActiveChatId(id);
@@ -18,8 +22,38 @@ const page = () => {
   }, [id, setActiveChatId])
 
   const handleUserMsg = async (msg, sender) =>{
-    await addMessage(msg, sender);
+    await addMessage(msg.trim(), sender);
     setUserMsg('');
+    getAiRes(msg.trim(), 'ai');
+  }
+
+  const getAiRes = async(message, sender)=>{
+    setLoading(true);
+    try {
+      const res = await fetch('/api/aichat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: message
+        })
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setAiMsg(data.data);
+        addMessage(data.data, sender);
+      } else {
+        setAiMsg('Error: Could not get response');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setAiMsg('Error: Something went wrong');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
