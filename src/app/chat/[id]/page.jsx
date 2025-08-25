@@ -1,25 +1,42 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import AiInput from '@/components/ui/ai-input'
 import { useParams } from 'next/navigation';
 import { useChatStore } from '@/store/chat-store';
 import Image from 'next/image';
 
 const page = () => {
-
   const {id} = useParams();
   const {setActiveChatId, addMessage} = useChatStore((state)=>state.actions);
   const {activeChat} = useChatStore((state)=>state);
   const [userMsg, setUserMsg] = useState('');
   const [aiMsg, setAiMsg] = useState('');
   const [loading, setLoading] = useState(false);
+  const messagesEndRef = useRef(null);
 
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
-  useEffect(() => { 
+  useEffect(() => {
     if(id){
       setActiveChatId(id);
     }
   }, [id, setActiveChatId])
+
+  // Scroll to bottom when messages change or loading state changes
+  useEffect(() => {
+    scrollToBottom();
+  }, [activeChat?.messages, loading])
+
+  // Scroll to bottom when component mounts (page reload)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      scrollToBottom();
+    }, 300); // Small delay to ensure content is rendered
+    
+    return () => clearTimeout(timer);
+  }, [activeChat])
 
   const handleUserMsg = async (msg, sender) =>{
     await addMessage(msg.trim(), sender);
@@ -39,9 +56,7 @@ const page = () => {
           message: message
         })
       });
-
       const data = await res.json();
-
       if (data.success) {
         setAiMsg(data.data);
         addMessage(data.data, sender);
@@ -61,19 +76,46 @@ const page = () => {
       <div className="chat-container">
         <div className="chat-messages">
           { activeChat && activeChat.messages.length > 0 ?
-            activeChat.messages.map((msg)=>(
-              <div className={`${msg.sender === 'user' ? 'message-user' : 'message-other'}`} key={msg.id}>
-                {msg.sender !== 'user' && <div className="message-avatar-primary">
-                  N
-                </div>}
-                <p className="message-text">
-                  {msg.text}
-                </p>
-                {msg.sender === 'user' &&<div className="message-avatar-secondary">
-                  U
-                </div>}
-              </div>
-            ))
+            <>
+              {activeChat.messages.map((msg, index) => {
+                const isLastMessage = index === activeChat.messages.length - 1;
+                
+                if(msg.sender === 'user'){
+                  return (
+                    <div key={msg.id} className='w-full max-w-2xl'>
+                      <div className="message-user">
+                        <div className="message-avatar-secondary">
+                          U
+                        </div>
+                        <p className="message-text">{msg.text}</p>
+                      </div>
+                    </div>
+                  )
+                }
+                return (
+                  <div className="message-other" key={msg.id}>
+                    <div className="message-avatar-primary">
+                      N
+                    </div>
+                    <p className="message-text">{msg.text}</p>
+                  </div>
+                )
+              })}
+              
+              {/* Show loading indicator only after the last message if it's from user and we're loading */}
+              {loading && activeChat.messages.length > 0 && 
+               activeChat.messages[activeChat.messages.length - 1].sender === 'user' && (
+                <div className="message-other">
+                  <div className="message-avatar-primary">
+                    N
+                  </div>
+                  <p className="message-text">AI is thinking...</p>
+                </div>
+              )}
+              
+              {/* Invisible element to scroll to */}
+              <div ref={messagesEndRef} />
+            </>
             :
             <div className="w-full h-full flex items-center justify-center mt-[30%]">
               <div className="text-muted-foreground dark:text-muted-foreground text-sm px-4 gap-4 mt-2 font-semibold flex flex-col items-center justify-center">
@@ -82,11 +124,12 @@ const page = () => {
                   <p>No messages found</p>
                 </div>
               </div>
+              {/* Invisible element to scroll to (for empty state) */}
+              <div ref={messagesEndRef} />
             </div>
           }
         </div>
       </div>
-
       <div className="fixed bottom-0 w-full max-w-3xl z-10 px-2 sm:px-0">
         <AiInput userMsg={userMsg} setUserMsg={setUserMsg} handleUserMsg={handleUserMsg} />
       </div>
@@ -95,9 +138,3 @@ const page = () => {
 }
 
 export default page
-
-
-/** 
- * ? api keys, message->[role, content]
- */
-
