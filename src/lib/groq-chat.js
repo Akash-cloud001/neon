@@ -4,7 +4,7 @@ import { tavily } from "@tavily/core";
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const tvly = tavily({ apiKey: process.env.TAVILY_API_KEY });
 
-export async function generate(userMessage) {
+export async function generate(userMessage, conversationHistory=[]) {
   const messages = [
     // {
     //   role: "system",
@@ -50,6 +50,16 @@ export async function generate(userMessage) {
   ];
 
   try {
+
+    //history conservation
+    if(conversationHistory && conversationHistory.length > 0){
+      conversationHistory.forEach(msg =>{
+        messages.push({
+          role: msg.sender === 'user' ? 'user':'system',
+          content: msg.text
+        })
+      })
+    }
     // Add user message to conversation history
     messages.push({
       role: "user",

@@ -7,7 +7,7 @@ export async function GET() {
 export async function POST(request) {
   try {
     const body = await request.json();
-    const result = await generate(body.message);
+    const result = await generate(body.message, body.conversationHistory);
         
     if (result) {
       return Response.json({

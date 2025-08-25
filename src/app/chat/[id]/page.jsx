@@ -47,13 +47,18 @@ const page = () => {
   const getAiRes = async(message, sender)=>{
     setLoading(true);
     try {
+      const conversationHistory = activeChat?.messages || [];
+      const maxHistMsg = 20;
+      const recentHist = conversationHistory.slice(-maxHistMsg);
+
       const res = await fetch('/api/aichat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: message
+          message: message,
+          conversationHistory: recentHist
         })
       });
       const data = await res.json();
@@ -72,7 +77,7 @@ const page = () => {
   }
 
   return (
-    <section className='h-[calc(100dvh-69px-16px)] overflow-y-scroll overflow-x-hidden pt-2 sm:pt-4 px-2 sm:px-4 w-full md:max-w-3xl mx-auto relative scrollbar-hide'>
+    <section className='h-[calc(100dvh-69px-16px)] overflow-y-scroll overflow-x-hidden pt-2 sm:pt-4 px-2 sm:px-4 w-full lg:max-w-3xl mx-auto relative scrollbar-hide'>
       <div className="chat-container">
         <div className="chat-messages">
           { activeChat && activeChat.messages.length > 0 ?
@@ -82,14 +87,12 @@ const page = () => {
                 
                 if(msg.sender === 'user'){
                   return (
-                    <div key={msg.id} className='w-full max-w-2xl'>
                       <div className="message-user">
                         <div className="message-avatar-secondary">
                           U
                         </div>
                         <p className="message-text">{msg.text}</p>
                       </div>
-                    </div>
                   )
                 }
                 return (
@@ -109,7 +112,7 @@ const page = () => {
                   <div className="message-avatar-primary">
                     N
                   </div>
-                  <p className="message-text">AI is thinking...</p>
+                  <p className="message-text animate-pulse">AI is thinking...</p>
                 </div>
               )}
               
