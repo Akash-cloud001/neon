@@ -17,19 +17,52 @@ interface ChatDB extends DBSchema {
       }[];
     };
   };
+  user_settings: {
+    key: string;
+    value: {
+      modelName: string;
+      apiKey: string;
+    };
+  };
+  ai_tools: {
+    key: string;
+    value: {
+      toolName: string;
+      apiKey: string;
+    };
+  };
 }
 
 let dbPromise: Promise<IDBPDatabase<ChatDB>> | null = null;
 
 if (typeof window !== 'undefined') {
-  dbPromise = openDB<ChatDB>('chat-database', 1, {
-    upgrade(db) {
-      db.createObjectStore('chats', { keyPath: 'id' });
+  dbPromise = openDB<ChatDB>('chat-database', 4, { // Incremented version to 4
+    upgrade(db, oldVersion) {
+      if (oldVersion < 1) {
+        db.createObjectStore('chats', { keyPath: 'id' });
+      }
+      if (oldVersion < 2) {
+        db.createObjectStore('user_settings', { keyPath: 'key' });
+      }
+      if (oldVersion < 3) {
+        if (db.objectStoreNames.contains('user_settings')) {
+          db.deleteObjectStore('user_settings');
+        }
+        db.createObjectStore('user_settings');
+      }
+      if (oldVersion < 4) {
+        // In version 4, we modify user_settings and create ai_tools
+        if (db.objectStoreNames.contains('user_settings')) {
+          db.deleteObjectStore('user_settings');
+        }
+        db.createObjectStore('user_settings', { keyPath: 'modelName' });
+        db.createObjectStore('ai_tools', { keyPath: 'toolName' });
+      }
     },
   });
 }
 
-// Database interaction functions
+// --- CHAT DATABASE FUNCTIONS ---
 export const chatDB = {
   async getAllChats() {
     if (!dbPromise) return [];
@@ -85,5 +118,34 @@ export const chatDB = {
       chat.messages = chat.messages.filter(m => m.id !== messageId);
       await this.updateChat(chat);
     }
+  },
+};
+
+// --- SETTINGS DATABASE FUNCTIONS ---
+export const settingsDB = {
+  async getModel(modelName: string) {
+    if (!dbPromise) return undefined;
+    return (await dbPromise).get('user_settings', modelName);
+  },
+  async getAllModels() {
+    if (!dbPromise) return [];
+    return (await dbPromise).getAll('user_settings');
+  },
+  async saveModel(model: { modelName: string, apiKey: string }) {
+    if (!dbPromise) throw new Error('Database not initialized');
+    return (await dbPromise).put('user_settings', model);
+  },
+};
+
+// --- TOOLS DATABASE FUNCTIONS ---
+export const toolsDB = {
+  async getTool(toolName: string) {
+    if (!dbPromise) return undefined;
+    return (await dbPromise).get('ai_tools', toolName);
+  },
+
+  async saveTool(tool: { toolName: string, apiKey: string }) {
+    if (!dbPromise) throw new Error('Database not initialized');
+    return (await dbPromise).put('ai_tools', tool);
   },
 };

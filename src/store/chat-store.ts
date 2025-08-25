@@ -27,9 +27,10 @@ interface ChatStore {
     renameChat: (id: string, title: string) => Promise<void>;
     deleteChat: (id: string) => Promise<void>;
     setActiveChatId: (id: string) => void;
-    addMessage: (text: string, sender: 'user' | 'ai') => Promise<void>;
+    addMessage: (text: string, sender: 'user' | 'ai', messageId?: string) => Promise<void>;
     loadMessages: (chatId: string) => Promise<void>;
     updateMessage: (chatId: string, message: Message) => Promise<void>;
+    updateMessageContent: (messageId: string, content: string) => Promise<void>;
     deleteMessage: (chatId: string, messageId: string) => Promise<void>;
   };
 }
@@ -88,12 +89,12 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       const chat = await chatDB.getChat(id);
       set({ activeChatId: id, activeChat: chat });
     },
-    async addMessage(text, sender) {
+    async addMessage(text, sender, messageId) {
       const { activeChatId } = get();
       if (!activeChatId) return;
 
       const newMessage = {
-        id: uuidv4(),
+        id: messageId || uuidv4(),
         text,
         sender,
         createdAt: new Date(),
@@ -128,7 +129,22 @@ export const useChatStore = create<ChatStore>((set, get) => ({
             ? { ...chat, messages: chat.messages.map(m => m.id === message.id ? message : m) }
             : chat
         ),
+        activeChat: state.activeChat && state.activeChat.id === chatId 
+          ? { ...state.activeChat, messages: state.activeChat.messages.map(m => m.id === message.id ? message : m) }
+          : state.activeChat
       }));
+    },
+    async updateMessageContent(messageId, content) {
+      const { activeChatId } = get();
+      if (!activeChatId) return;
+
+      // Find the message in the active chat
+      const state = get();
+      const message = state.activeChat?.messages.find(m => m.id === messageId);
+      if (!message) return;
+
+      const updatedMessage = { ...message, text: content };
+      await this.updateMessage(activeChatId, updatedMessage);
     },
     async deleteMessage(chatId, messageId) {
       await chatDB.deleteMessage(chatId, messageId);
